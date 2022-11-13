@@ -45,7 +45,7 @@ def interpolator(urls, weights):
                     transparency_matrix[r][c] = 1
     pixels /= sum(weights)
 
-    # Convert back to RGBA, fit transparencies to square root curve
+    # Convert back to RGBA, fit transparencies to curve
     for r in range(pixels.shape[0]):
         for c in range(pixels.shape[1]):
             pixel = pixels[r][c]
