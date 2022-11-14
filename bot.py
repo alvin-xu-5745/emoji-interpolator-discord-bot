@@ -15,7 +15,7 @@ async def interpolate(event):
 		return
 
 	if event.content.startswith("!interpolate"):
-		args = event.content.split(' ')[1:]
+		args = event.content.split()[1:]
 		if len(args) % 2 != 0:
 			await event.message.respond("Invalid arguments. Proper usage: '!interpolate <emoji> <weight>', where you can have as many emoji + weight pairs as you want.")
 			return
@@ -26,6 +26,7 @@ async def interpolate(event):
 			weights.append(int(args[i + 1]))
 		interpolator(urls, weights)
 		await event.message.respond(attachment='result.png')
-		os.remove('result.png')
+		if os.path.exists('result.png'):
+			os.remove('result.png')
 
 bot.run()
