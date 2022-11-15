@@ -59,6 +59,20 @@ def interpolator(urls, weights):
 
     # Generate output
     pixels = pixels.astype(np.uint8)
-    final_image = Image.fromarray(pixels, mode="RGBA")
-    final_image.save('result.png')
     shutil.rmtree('tmp/', ignore_errors=True)
+    return pixels
+
+def get_score(pixels1, pixels2):
+    pixels1 = pixels1.astype(np.float16)
+    pixels2 = pixels2.astype(np.float16)
+    pixel_score = 0
+    for r in range(64):
+        for c in range(64):
+            pixel_score += abs(pixels1[r][c][0] - pixels2[r][c][0]) ** 0.5
+            pixel_score += abs(pixels1[r][c][1] - pixels2[r][c][1]) ** 0.5
+            pixel_score += abs(pixels1[r][c][2] - pixels2[r][c][2]) ** 0.5
+            pixel_score += abs(pixels1[r][c][3] - pixels2[r][c][3]) ** 0.5
+    pixel_score /= 64 * 64
+    return pixel_score
+
+    
