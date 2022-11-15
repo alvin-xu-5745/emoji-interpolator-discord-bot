@@ -3,3 +3,4 @@ __pycache__/
 .env
 tmp/
 result.png
+guessing_game.png

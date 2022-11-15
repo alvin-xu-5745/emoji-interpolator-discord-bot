@@ -14,7 +14,7 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 
 bot = hikari.GatewayBot(token=TOKEN, intents=hikari.Intents.ALL)
 
-available_unicode_emojis = ['😀', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃', '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😋', '🤪', '😝', '🤗', '🤔', '🤭', '🤑', '🤨', '😐', '😶', '😏', '😒', '😬', '🤥', '😌', '😔', '😪', '🤤', '😴', '🤮', '🥵', '🤢', '🥶', '🥴', '😵', '🤯', '🥳', '😎', '🤓', '🤓', '😟', '🙁', '😮', '😳', '🥺', '😨', '😰', '😢', '😭', '😱', '😣', '😞', '😓', '😩', '😫', '😤', '😡', '😠', '🤬', '😈', '💀', '👹', '👺', '🤡', '💩', '👻', '👽', '🤖', '😹', '🙉', '👀']
+available_unicode_emojis = ['😀', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃', '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😋', '🤪', '😝', '🤗', '🤔', '🤭', '🤑', '🤨', '😐', '😶', '😏', '😒', '😬', '🤥', '😌', '😔', '😪', '🤤', '😴', '🤮', '🥵', '🤢', '🥶', '🥴', '😵', '🤯', '🥳', '😎', '🤓', '🧐', '😟', '🙁', '😮', '😳', '🥺', '😨', '😰', '😢', '😭', '😱', '😣', '😞', '😓', '😩', '😫', '😤', '😡', '😠', '🤬', '😈', '💀', '👹', '👺', '🤡', '💩', '👻', '👽', '🤖', '😹', '🙉', '👀']
 unicode_emojis = list(map(lambda x: hikari.UnicodeEmoji.parse(x), available_unicode_emojis))
 
 curr_guess_creator = None
@@ -56,7 +56,8 @@ async def listen(event):
 			await event.message.respond("Use '!guess start' to start a game (if one doesn't already exist).")
 			await event.message.respond("Use '!guess end' to end a game in progress.")
 			await event.message.respond("Use '!guess <emoji> <weight>', to make a guess, where you can have as many emoji + weight pairs as desired.")
-			await event.message.respond("Use '!guess reminder', to look at the guessing target again.")
+			await event.message.respond("Use '!guess reminder' to look at the guessing target again.")
+			await event.message.respond("Use '!guess pool' to see what emojis are available for interpolation.")
 			return
 		elif args[0] == 'start':
 			if curr_guess_creator:
@@ -98,6 +99,12 @@ async def listen(event):
 		elif args[0] == 'reminder':
 			await event.message.respond(attachment='guessing_game.png')
 			await event.message.respond("There are %d emojis (that are non-animated and available), each with a weight 1 to 5." % num_emojis)
+		elif args[0] == 'pool':
+			await event.message.respond("All non-animated and available custom emojis in this server are in the pool, along with the following default emojis:")
+			pool = ""
+			for emoji in unicode_emojis:
+				pool += emoji.mention
+			await event.message.respond(pool)
 		else:
 			if len(args) % 2 != 0:
 				await event.message.respond("Invalid arguments. Proper usage: '!guess <emoji> <weight>', where you can have as many emoji + weight pairs as desired. Alternatively, end the game with '!guess end'.")
