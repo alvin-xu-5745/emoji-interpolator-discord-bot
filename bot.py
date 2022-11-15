@@ -14,6 +14,9 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 
 bot = hikari.GatewayBot(token=TOKEN, intents=hikari.Intents.ALL)
 
+available_unicode_emojis = ['😀', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃', '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😋', '🤪', '😝', '🤗', '🤔', '🤭', '🤑', '🤨', '😐', '😶', '😏', '😒', '😬', '🤥', '😌', '😔', '😪', '🤤', '😴', '🤮', '🥵', '🤢', '🥶', '🥴', '😵', '🤯', '🥳', '😎', '🤓', '🤓', '😟', '🙁', '😮', '😳', '🥺', '😨', '😰', '😢', '😭', '😱', '😣', '😞', '😓', '😩', '😫', '😤', '😡', '😠', '🤬', '😈', '💀', '👹', '👺', '🤡', '💩', '👻', '👽', '🤖', '😹', '🙉', '👀']
+unicode_emojis = list(map(lambda x: hikari.UnicodeEmoji.parse(x), available_unicode_emojis))
+
 curr_guess_creator = None
 guesses = []
 guess_emojis, guess_weights = [], []
@@ -26,6 +29,7 @@ async def listen(event):
 	global guess_emojis
 	global guess_weights
 	global num_emojis
+	global available_unicode_emojis
 	if event.is_bot or not event.content:
 		return
 
@@ -58,7 +62,7 @@ async def listen(event):
 			if curr_guess_creator:
 				await event.message.respond("Game already in progress, started by %s. Use '!guess end' to end that game." % curr_guess_creator)
 				return
-			emojis = list(filter(lambda x: (not x.is_animated) and x.is_available, list(event.get_guild().get_emojis().values())))
+			emojis = list(filter(lambda x: (not x.is_animated) and x.is_available, list(event.get_guild().get_emojis().values()))) + unicode_emojis
 			if len(emojis) == 0:
 				await event.message.respond("There are no custom emojis in this server to start a game with!")
 				return
@@ -79,15 +83,18 @@ async def listen(event):
 			if not curr_guess_creator:
 				await event.message.respond("No game in progress!")
 				return
+			curr_guess_creator = None
+			if os.path.exists('guessing_game.png'):
+				os.remove('guessing_game.png')
 			answer = ""
 			for i in range(len(guess_emojis)):
 				answer += guess_emojis[i].mention + " " + str(guess_weights[i]) + " "
 			await event.message.respond("Correct answer was %s" % answer)
+			if not guesses:
+				await event.message.respond("No one guessed!")
+				return
 			winner_score, winner_name = min(guesses)
 			await event.message.respond("Winner was %s with score %.2f!" % (winner_name, winner_score))
-			curr_guess_creator = None
-			if os.path.exists('guessing_game.png'):
-				os.remove('guessing_game.png')
 		elif args[0] == 'reminder':
 			await event.message.respond(attachment='guessing_game.png')
 			await event.message.respond("There are %d emojis (that are non-animated and available), each with a weight 1 to 5." % num_emojis)
