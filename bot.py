@@ -68,8 +68,10 @@ async def listen(event):
 				await event.message.respond("There are no custom emojis in this server to start a game with!")
 				return
 			guesses = []
+			guess_emojis = []
+			guess_weights = []
 			curr_guess_creator = event.member.username
-			num_emojis = random.randint(1, min(len(emojis), 10))
+			num_emojis = random.randint(2, 6)
 			emojis_chosen = random.sample(emojis, num_emojis)
 			guess_emojis += emojis_chosen
 			urls = list(map(lambda x: x.url, emojis_chosen))
